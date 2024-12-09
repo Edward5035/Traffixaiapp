@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Messaging App</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Send Messages to Social Platforms</h1>
+        <form id="message-form">
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea class="form-control" id="message" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Send Message</button>
+        </form>
+        <div class="mt-4" id="message-output"></div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#message-form').on('submit', function(event) {
+                event.preventDefault();
+                const message = $('#message').val();
+                $.post('/send-tweet', { message }, function(data) {
+                    $('#message-output').html('<h3>Message Sent:</h3><p>' + JSON.stringify(data) + '</p>');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

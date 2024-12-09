@@ -1,0 +1,229 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard - SMART AI{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Insights Card (No height change) -->
+    <div class="row mb-4">
+        <div class="col">
+            <div class="card h-100 shadow-lg border-0 rounded-4" style="background: linear-gradient(135deg, #FF8000, #4A90E2);">
+                <div class="card-body text-white">
+                    <h5 class="card-title fw-bold" style="font-family: 'Roboto', sans-serif;">Today's Insights</h5>
+                    <p class="card-text mb-4" style="font-family: 'Roboto', sans-serif;">At a glance, monitor the key metrics that matter most to your business performance.</p>
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                            <div class="insight-box" style="background-color: #1D1D1D;">
+                             <h6 class="text-white" style="font-family: 'Roboto', sans-serif;">New Leads</h6>
+<h4 class="fw-bold" style="font-family: 'Roboto', sans-serif; color: #FF8000;">
+    {{ session.get('lead_count', 0) }}
+</h4>
+
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                            <div class="insight-box" style="background-color: #1D1D1D;">
+                                <h6 class="text-white" style="font-family: 'Roboto', sans-serif;">Phone Numbers Found</h6>
+                                <h4 class="fw-bold" style="font-family: 'Roboto', sans-serif; color: #FF8000;">{{ phone_count or 0 }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                            <div class="insight-box" style="background-color: #1D1D1D;">
+                                <h6 class="text-white" style="font-family: 'Roboto', sans-serif;">Company Names Found</h6>
+                                <h4 class="fw-bold" style="font-family: 'Roboto', sans-serif; color: #FF8000;">{{ company_name_count or 0 }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                            <div class="insight-box" style="background-color: #1D1D1D;">
+                                <h6 class="text-white" style="font-family: 'Roboto', sans-serif;">Social Media Links Found</h6>
+                                <h4 class="fw-bold" style="font-family: 'Roboto', sans-serif; color: #FF8000;">{{ social_media_count or 0 }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                            <div class="insight-box" style="background-color: #1D1D1D;">
+                                <h6 class="text-white" style="font-family: 'Roboto', sans-serif;">Addresses Found</h6>
+                                <h4 class="fw-bold" style="font-family: 'Roboto', sans-serif; color: #FF8000;">{{ address_count or 0 }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                            <div class="insight-box" style="background-color: #1D1D1D;">
+                                <h6 class="text-white" style="font-family: 'Roboto', sans-serif;">Emails Found</h6>
+                                <h4 class="fw-bold" style="font-family: 'Roboto', sans-serif; color: #FF8000;">{{ email_count or 0 }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lead Breakdown Chart Card (Only this card's height changes) -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-dark text-white text-center">
+                    <h4 class="mb-0" style="font-family: 'Roboto', sans-serif;">Buyer Breakdown</h4>
+                </div>
+                <div class="card-body chart-card-body">
+                    <canvas id="leadChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Start Guide Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-dark text-white text-center">
+                    <h4 class="mb-0" style="font-family: 'Roboto', sans-serif;">Quick Start Guide</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for icon, title, description, color in [
+                            ('fa-tachometer-alt', 'Dashboard Overview', 'Navigate all features for efficiency.', 'warning'),
+                            ('fa-user-check', 'Find Ideal Buyers', 'Use AI to generate high-quality leads.', 'success'),
+                            ('fa-chart-line', 'Boost Your Reach', 'Increase visibility with traffic apps for major platforms.', 'info'),
+                            ('fa-envelope', 'Email Campaigns', 'Design and track email marketing for high conversion.', 'primary'),
+                            ('fa-user-friends', 'Social Engagement', 'Engage leads with social messaging and AI content.', 'warning'),
+                            ('fa-cogs', 'Support Hub', 'Get expert help and FAQs for optimal results.', 'secondary')
+                        ] %}
+                            <div class="col-lg-4 col-md-6 col-sm-12 text-center mb-4">
+                                <i class="fas {{ icon }} fa-3x text-{{ color }} mb-2"></i>
+                                <h6 class="fw-bold" style="font-family: 'Roboto', sans-serif;">{{ title }}</h6>
+                                <p class="text-muted" style="font-family: 'Roboto', sans-serif;">{{ description }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    var ctx = document.getElementById('leadChart').getContext('2d');
+
+    var leadChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Emails', 'Phone Numbers', 'Addresses', 'Social Media', 'Company Names'],
+            datasets: [{
+                label: 'Lead Breakdown',
+                data: [
+                    {{ session.get('email_count', 0) or 0 }},
+                    {{ session.get('phone_count', 0) or 0 }},
+                    {{ session.get('address_count', 0) or 0 }},
+                    {{ session.get('social_media_count', 0) or 0 }},
+                    {{ session.get('company_name_count', 0) or 0 }}
+                ],
+                backgroundColor: '#36A2EB',
+                borderColor: '#FFFFFF',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,  // Ensures the chart resizes with the window
+            maintainAspectRatio: false,  // Allows for dynamic height adjustment
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            return tooltipItem.label + ': ' + tooltipItem.raw + ' leads';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Automatically resize the chart when the window is resized
+    window.addEventListener('resize', function() {
+        leadChart.resize();
+    });
+</script>
+
+<style>
+    /* Insight Box Styles */
+    .insight-box {
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        text-align: center;
+        color: #fff;
+        width: 100%;
+        margin-bottom: 1rem;
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .insight-box:hover {
+        box-shadow: 0px 12px 24px rgba(0, 0, 0, 0.2);
+        transform: translateY(-4px);
+    }
+
+    .insight-box h4 {
+        font-family: 'Roboto', sans-serif;
+        font-weight: 600;
+        font-size: 2rem;
+    }
+
+    .insight-box h6 {
+        font-family: 'Roboto', sans-serif;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .insight-box .fw-bold {
+        font-size: 1.8rem;
+        color: #FF8000;
+    }
+
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        background: #fff;
+        border-width: 0;
+        margin-bottom: 1.5rem;
+    }
+
+    .card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0px 12px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-body i {
+        font-size: 3rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-dark {
+        background-color: #1D1D1D;
+        border-color: #1D1D1D;
+    }
+
+    .btn-light {
+        background-color: #FF8000;
+        border-color: #FF8000;
+    }
+
+    /* Fixed height for the chart card */
+    .chart-card-body {
+        height: 400px;  /* Fixed height for the chart card */
+        padding: 2rem;
+    }
+
+    canvas {
+        width: 100% !important;
+        height: 100% !important;
+    }
+</style>
+
+{% endblock %}

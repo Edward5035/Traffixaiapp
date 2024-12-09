@@ -1,0 +1,89 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="my-4 text-center" style="color: #f39c12;">Mass Outreach</h1>
+    <p class="text-center text-muted" style="font-size: 1.2rem;">Reach your audience effortlessly with professional bulk email campaigns. Start by filling out the form below.</p>
+
+    <!-- Bulk Email Sender Form -->
+    <form id="bulk-email-form" class="shadow-sm p-5 mb-5 bg-white rounded" method="POST" action="{{ url_for('bulk_email_sender') }}" style="max-width: 900px; margin: auto; border: 2px solid #f39c12; border-radius: 20px; position: relative;">
+        <h2 class="text-center mb-4" style="color: #f39c12;">Compose Your Campaign</h2>
+
+        <div class="mb-4">
+            <label for="email-subject" class="form-label fw-bold" style="color: #f39c12;">Email Subject</label>
+            <input type="text" id="email-subject" name="email_subject" class="form-control shadow-sm" placeholder="Enter email subject" style="border: 2px solid #f39c12; border-radius: 10px;" required>
+        </div>
+
+        <div class="mb-4">
+            <label for="email-body" class="form-label fw-bold" style="color: #f39c12;">Email Body</label>
+            <textarea id="email-body" name="email_body" class="form-control shadow-sm" rows="6" placeholder="Write your message here..." style="border: 2px solid #f39c12; border-radius: 10px;" required></textarea>
+        </div>
+
+        <div class="mb-4">
+            <label for="email-list" class="form-label fw-bold" style="color: #f39c12;">Recipient Emails</label>
+            <textarea id="email-list" name="email_list" class="form-control shadow-sm" rows="4" placeholder="Add email addresses separated by commas or line breaks" style="border: 2px solid #f39c12; border-radius: 10px;" required></textarea>
+        </div>
+
+        <h3 class="text-center my-4" style="color: #f39c12;">SMTP Settings</h3>
+        
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <label for="smtp-server" class="form-label fw-bold" style="color: #f39c12;">SMTP Server</label>
+                <input type="text" id="smtp-server" name="smtp_server" class="form-control shadow-sm" placeholder="e.g., smtp.example.com" style="border: 2px solid #f39c12; border-radius: 10px;" required>
+            </div>
+            <div class="col-md-6 mb-4">
+                <label for="smtp-port" class="form-label fw-bold" style="color: #f39c12;">SMTP Port</label>
+                <input type="number" id="smtp-port" name="smtp_port" class="form-control shadow-sm" placeholder="e.g., 587" style="border: 2px solid #f39c12; border-radius: 10px;" required>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <label for="smtp-username" class="form-label fw-bold" style="color: #f39c12;">SMTP Username</label>
+                <input type="text" id="smtp-username" name="smtp_username" class="form-control shadow-sm" placeholder="Your email address" style="border: 2px solid #f39c12; border-radius: 10px;" required>
+            </div>
+            <div class="col-md-6 mb-4">
+                <label for="smtp-password" class="form-label fw-bold" style="color: #f39c12;">SMTP Password</label>
+                <input type="password" id="smtp-password" name="smtp_password" class="form-control shadow-sm" placeholder="Your email password" style="border: 2px solid #f39c12; border-radius: 10px;" required>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button class="btn btn-lg btn-outline-warning mt-4 shadow-lg" type="submit" style="color: #f39c12; font-weight: bold; border-color: #f39c12;">
+                <i class="fas fa-paper-plane me-2"></i> Launch Campaign
+            </button>
+        </div>
+    </form>
+
+    <!-- Confirmation Message -->
+    <div id="confirmation-message" class="text-center mt-4" style="display: none;">
+        <div class="alert alert-success" role="alert" style="border-radius: 10px; background-color: #28a745; color: white;">
+            <i class="fas fa-check-circle me-2"></i> Your emails are on their way!
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control {
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #f39c12;
+        box-shadow: 0 0 10px rgba(243, 156, 18, 0.5);
+    }
+
+    form {
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    form:hover {
+        transform: translateY(-5px);
+    }
+
+    .btn-outline-warning:hover {
+        background-color: #f39c12;
+        color: white;
+    }
+</style>
+{% endblock %}

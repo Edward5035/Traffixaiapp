@@ -1,0 +1,136 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="my-4 text-center" style="color: #FFA500;">Buyer Scoring</h1>
+    <p class="text-center" style="color: #000000;">Use our AI to score and prioritize your leads based on various criteria.</p>
+
+    <!-- Upload or Paste Leads -->
+    <div class="card shadow-lg mx-auto mb-5" style="max-width: 800px; border-radius: 15px; border: 2px solid #FFA500;">
+        <div class="card-body">
+            <h5 class="card-title text-center" style="color: #FFA500;">Paste Leads</h5>
+            <hr>
+            <form id="lead-form" class="d-flex flex-column align-items-center" method="POST" action="{{ url_for('ai_lead_scoring') }}">
+                <textarea name="leads" class="form-control mb-3" rows="6" placeholder="Paste your leads here..." style="border: 2px solid #FFA500; border-radius: 15px;">{{ request.form.get('leads', '') }}</textarea>
+                <button type="submit" class="btn" id="analyze-button" style="background-color: #FFA500; color: #ffffff; width: 100%; max-width: 200px;">
+                    <i class="fas fa-calculator" style="margin-right: 8px;"></i> <!-- Adjusted icon margin -->
+                    <span>Analyze</span>
+                    <div id="loading-spinner" class="spinner-border spinner-border-sm ms-2" role="status" style="display: none;">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Card -->
+    <div class="card shadow-lg mx-auto" style="max-width: 800px; border-radius: 15px; border: 2px solid #FFA500;">
+        <div class="card-body">
+            <h5 class="card-title text-center" style="color: #FFA500;">Scored Leads</h5>
+            <hr>
+            <!-- Results Content -->
+            <div id="results-container" style="max-height: 400px; overflow-y: auto;">
+                <ul class="list-group list-group-flush" id="results-list">
+                    {% for result in results %}
+                    <li class="list-group-item">
+                        <strong style="font-size: 1.2rem; color: #FFA500;">{{ result.name }}</strong><br>
+                        <strong style="color: #777777;">Score:</strong> {{ result.score }}<br>
+                        <strong style="color: #777777;">Category:</strong> {{ result.category }}<br>
+                        <strong style="color: #777777;">Conversion Rate:</strong> {{ result.conversion_rate }}%<br>
+                        <strong style="color: #777777;">Email:</strong> {{ result.email }}<br>
+                        <strong style="color: #777777;">Phone No:</strong> {{ result.phone }}<br>
+                        <strong style="color: #777777;">Address:</strong> {{ result.address }}<br>
+                        <strong style="color: #777777;">Social Media:</strong> {{ result.social_media }}<br>
+                        <p style="color: #FFA500;">AI Feedback: {{ result.ai_feedback }}</p>
+                        <a href="#" class="btn btn-link" style="color: #FFA500;">Visit Website</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Download and Copy Buttons -->
+            <div class="text-center mt-4">
+                <button id="download-btn" class="btn rounded-pill shadow-lg mx-2" style="background-color: #FFA500; color: #ffffff;">
+                    <i class="fas fa-download"></i> Download
+                </button>
+                <button id="copy-btn" class="btn rounded-pill shadow-lg mx-2" style="background-color: #FFA500; color: #ffffff;">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card, .btn {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover, .btn:hover {
+        transform: translateY(-5px); /* Floating effect */
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); /* Deepened shadow */
+    }
+
+    #results-list {
+        max-height: 100%;
+        overflow-y: auto;
+    }
+
+    /* Adjusting the analyze button size based on screen width */
+    @media (max-width: 768px) {
+        #analyze-button {
+            width: 100%; /* Full width on mobile */
+            font-size: 1.2rem; /* Bigger text for better visibility */
+        }
+    }
+
+    @media (min-width: 768px) {
+        #analyze-button {
+            max-width: 200px; /* Smaller on larger screens */
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const leadForm = document.getElementById('lead-form');
+        const analyzeButton = document.getElementById('analyze-button');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const downloadBtn = document.getElementById('download-btn');
+        const copyBtn = document.getElementById('copy-btn');
+
+        leadForm.addEventListener('submit', (event) => {
+            event.preventDefault();  // Prevent the form from submitting immediately
+            analyzeButton.disabled = true;  // Disable the button to prevent multiple submissions
+            loadingSpinner.style.display = 'inline-block'; // Show loading spinner on the button
+
+            setTimeout(() => {
+                leadForm.submit();  // Submit the form after the delay
+            }, Math.random() * (5000 - 2000) + 2000); // Delay between 2 to 5 seconds
+        });
+
+        // Download button functionality
+        downloadBtn.addEventListener('click', () => {
+            const results = document.getElementById('results-list').innerText;
+            const blob = new Blob([results], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'scored_leads.txt';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // Copy button functionality
+        copyBtn.addEventListener('click', () => {
+            const results = document.getElementById('results-list').innerText;
+            navigator.clipboard.writeText(results).then(() => {
+                alert('Results copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        });
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,230 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="text-center my-4 page-title">Social Media Lookup</h1>
+    <p class="text-center page-subtitle">Effortlessly connect and network by finding social media and contact information.</p>
+    
+    <!-- Search Form -->
+    <form id="social-media-lookup-form" class="search-form shadow-lg p-4 rounded" method="POST" action="{{ url_for('find_contacts') }}">
+        <div class="input-group mb-3 search-input-group">
+            <input type="text" name="search_query" class="form-control search-input" placeholder="Enter company name or individual" required>
+            <button class="btn btn-primary search-button" type="submit">
+                <i class="fas fa-search me-2"></i>Find Contacts
+                <span id="loader" class="spinner-border spinner-border-sm ms-2" style="display: none;"></span>
+            </button>
+        </div>
+    </form>
+
+    <!-- Results Section -->
+    <div class="results-section mt-5">
+        <div class="card results-card">
+            <div class="card-body">
+                <h5 class="card-title text-center results-title">Search Results</h5>
+                <hr>
+                {% if not contact_info %}
+                <p class="text-center results-message">
+                    Start your search by entering a company name or individual and clicking "Find Contacts."
+                </p>
+                {% else %}
+                <ul class="list-group list-group-flush results-list">
+                    {% for contact in contact_info %}
+                    <li class="list-group-item results-item">
+                        <strong class="contact-title">{{ contact['title'] }}</strong><br>
+                        <span class="contact-domain">Domain:</span> {{ contact['domain'] }}<br>
+                        <span class="contact-details">Emails:</span>
+                        <ul>
+                            {% for email in contact['emails'] %}
+                            <li>{{ email }}</li>
+                            {% endfor %}
+                        </ul>
+                        <span class="contact-details">Phone Numbers:</span>
+                        <ul>
+                            {% for phone in contact['phone_numbers'] %}
+                            <li>{{ phone }}</li>
+                            {% endfor %}
+                        </ul>
+                        <span class="contact-details">Social Media Links:</span>
+                        <ul>
+                            {% for link in contact['social_links'] %}
+                            <li><a href="{{ link }}" target="_blank">{{ link }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Page Styles */
+    .page-title {
+        color: #f39c12;
+        font-weight: 800;
+        font-size: 2.5rem;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .page-subtitle {
+        color: #777;
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Search Form Styles */
+    .search-form {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .search-input-group {
+        display: flex;
+        align-items: center;
+        border: 2px solid #f39c12;
+        border-radius: 30px;
+        padding: 0.5rem;
+        background: #fff;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .search-input {
+        border: none;
+        padding: 0.75rem;
+        flex: 1;
+        font-size: 1rem;
+    }
+
+    .search-button {
+        background-color: #f39c12;
+        color: #fff;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 30px;
+        transition: background-color 0.3s ease;
+    }
+
+    .search-button:hover {
+        background-color: #e67e22;
+    }
+
+    /* Results Section Styles */
+    .results-section {
+        max-width: 1000px;
+        margin: 30px auto;
+    }
+
+    .results-card {
+        border-radius: 20px;
+        border: 2px solid #f39c12;
+        padding: 1.5rem;
+        background: #fff;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .results-title {
+        color: #4a4a4a;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .results-message {
+        color: #777;
+        font-size: 1.1rem;
+    }
+
+    .results-list {
+        max-height: 300px;
+        overflow-y: auto;
+        padding: 10px;
+    }
+
+    .results-item {
+        font-size: 1rem;
+        padding: 15px;
+        border-bottom: 1px solid #ddd;
+        transition: transform 0.2s ease;
+    }
+
+    .results-item:hover {
+        transform: scale(1.02);
+        background-color: #fef9e7;
+    }
+
+    .contact-title {
+        font-size: 1.2rem;
+        color: #f39c12;
+    }
+
+    .contact-domain {
+        color: #555;
+        font-weight: 600;
+    }
+
+    .contact-details {
+        color: #555;
+    }
+
+    @media (max-width: 768px) {
+        .page-title {
+            font-size: 1.8rem;
+        }
+
+        .page-subtitle {
+            font-size: 1rem;
+        }
+
+        .search-form {
+            max-width: 100%;
+        }
+
+        .search-input-group {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .search-input, .search-button {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .results-card {
+            padding: 1rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .search-input {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .search-button {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        .results-card {
+            padding: 0.5rem;
+        }
+
+        .results-item {
+            font-size: 0.9rem;
+        }
+
+        .contact-title {
+            font-size: 1rem;
+        }
+    }
+</style>
+
+<script>
+    document.getElementById('social-media-lookup-form').addEventListener('submit', function() {
+        document.getElementById('loader').style.display = 'inline-block';
+    });
+</script>
+{% endblock %}

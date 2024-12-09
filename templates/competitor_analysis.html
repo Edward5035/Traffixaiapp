@@ -1,0 +1,211 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="text-center my-4 page-title">Competitor Analysis</h1>
+    <p class="text-center page-subtitle">Gain insights into your competitors and stay ahead in the market.</p>
+    
+    <!-- Competitor Analysis Form -->
+   <form id="competitor-analysis-form" class="analysis-form shadow-lg p-4 rounded" method="POST" action="{{ url_for('competitor_analysis') }}">
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="business_type" class="form-label">Business Type</label>
+            <input type="text" id="business_type" name="business_type" class="form-control analysis-input" placeholder="Business (e.g., Bakery)" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="location" class="form-label">Location</label>
+            <input type="text" id="location" name="location" class="form-control analysis-input" placeholder="Location (City/Town, Country)" required>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="industry" class="form-label">Industry</label>
+            <input type="text" id="industry" class="form-control analysis-input" placeholder="industry">
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="annual_revenue" class="form-label">Target Market</label>
+            <input type="text" id="annual_revenue" class="form-control analysis-input" placeholder="Target Market">
+        </div>
+    </div>
+    <button class="btn btn-primary analysis-button" type="submit">
+        <i class="fas fa-search me-2"></i>Analyze Competitors
+        <span id="loader" class="spinner-border spinner-border-sm ms-2" style="display: none;"></span>
+    </button>
+</form>
+
+
+    <!-- Competitor Insights Section -->
+    <div class="insights-section mt-5">
+        <div class="card insights-card">
+            <div class="card-body">
+                <h5 class="card-title text-center insights-title">Competitor Insights</h5>
+                <hr>
+                <!-- Placeholder for the dynamically generated insights -->
+                <div id="insights-content" class="scrollable-content">
+                    {% if search_results %}
+                    <h6 class="text-center mb-4">Ranked Competitor Information</h6>
+                    <div class="row">
+                        {% for result in search_results %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ result.business_name }}</h5>
+                                    <p class="card-text"><strong>Description:</strong> {{ result.description }}</p>
+                                    <p class="card-text"><strong>Services:</strong></p>
+                                    <ul>
+                                        {% for service in result.services %}
+                                        <li>{{ service }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-center">Enter a business type and location to generate insights.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Page Styles */
+.page-title {
+    color: #f39c12;
+    font-weight: 700;
+    font-size: 2.2rem;
+    text-shadow: 1px 1px 3px rgba(243, 156, 18, 0.5);
+}
+
+.page-subtitle {
+    color: #555;
+    font-size: 1.1rem;
+}
+
+/* Form Styles */
+.analysis-form {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 15px;
+    border: 2px solid #f39c12;
+    padding: 2rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.form-label {
+    font-weight: 600;
+    color: #333;
+}
+
+.analysis-input {
+    border: 2px solid #f39c12;
+    border-radius: 30px;
+    padding: 0.75rem;
+    font-size: 1rem;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.analysis-button {
+    background-color: #f39c12;
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 30px;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+
+.analysis-button:hover {
+    background-color: #e67e22;
+}
+
+/* Insights Section Styles */
+.insights-section {
+    max-width: 1000px;
+    margin: 30px auto;
+}
+
+.insights-card {
+    border-radius: 15px;
+    border: 2px solid #f39c12;
+    padding: 1.5rem;
+    background: #fff;
+    box-shadow: 0 10px 25px rgba(243, 156, 18, 0.2);
+    transform: translateY(0);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.insights-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(243, 156, 18, 0.3);
+}
+
+.insights-title {
+    color: #f39c12;
+    font-weight: 700;
+}
+
+.scrollable-content {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+#insights-content {
+    color: #777;
+    font-size: 1rem;
+}
+
+.card-title {
+    color: #f39c12;
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 15px;
+}
+
+.card-text {
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.card ul {
+    padding-left: 20px;
+}
+
+.card ul li {
+    color: #777;
+    margin-bottom: 5px;
+}
+
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 1.8rem;
+    }
+
+    .page-subtitle {
+        font-size: 1rem;
+    }
+
+    .analysis-form {
+        max-width: 100%;
+    }
+
+    .analysis-input, .analysis-button {
+        width: 100%;
+    }
+}
+
+   
+</style>
+
+<script>
+    document.getElementById('competitor-analysis-form').addEventListener('submit', function() {
+        document.getElementById('loader').style.display = 'inline-block';
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,337 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container-fluid">
+  <h1 class="text-center my-4 page-title" style="font-family: Arial, sans-serif; font-weight: bold; color: rgb(3, 0, 0);">Target Buyers</h1>
+  <p class="text-center page-subtitle" style="font-family: Arial, sans-serif; color: black;">Discover Accurate, Verified and Top-Quality Prospects</p>
+
+ <!-- Search Form -->
+<form id="find-businesses-form" class="search-form" method="POST" action="{{ url_for('search_businesses') }}">
+  <div class="search-input-group">
+    <div class="row g-3">
+      <div class="col-12 col-md-6 col-lg-4 mb-3">
+        <label for="business_name" class="form-label" style="font-family: Arial, sans-serif; font-weight: bold; color: rgb(1, 0, 0);">Business Name</label>
+        <input list="business_name_list" name="business_name" id="business_name" class="form-control search-input" placeholder="Enter business name or select" required>
+        <datalist id="business_name_list">
+          <option value="Joe's Cafe">
+          <option value="Tech Innovators Inc.">
+          <option value="Green Solutions LLC">
+        </datalist>
+      </div>
+      <div class="col-12 col-md-6 col-lg-4 mb-3">
+        <label for="location" class="form-label" style="font-family: Arial, sans-serif; font-weight: bold; color: rgb(5, 0, 0);">Location</label>
+        <input list="location_list" name="location" id="location" class="form-control search-input" placeholder="Enter location or select (optional)">
+        <datalist id="location_list">
+          <option value="New York">
+          <option value="San Francisco">
+          <option value="Chicago">
+        </datalist>
+      </div>
+      <div class="col-12 col-md-6 col-lg-4 mb-3">
+        <label for="category" class="form-label" style="font-family: Arial, sans-serif; font-weight: bold; color: rgb(4, 0, 0);">Category</label>
+        <input list="category_list" name="category" id="category" class="form-control search-input" placeholder="Enter or select category">
+        <datalist id="category_list">
+          <option value="Restaurant">
+          <option value="Technology">
+          <option value="Retail">
+          <option value="Healthcare">
+          <option value="Education">
+        </datalist>
+      </div>
+      <div class="col-12 col-md-6 col-lg-4 mb-3">
+        <label for="service_type" class="form-label" style="font-family: Arial, sans-serif; font-weight: bold; color: rgb(3, 0, 0);">Service Type</label>
+        <input list="service_type_list" name="service_type" id="service_type" class="form-control search-input" placeholder="Enter service type (optional)">
+        <datalist id="service_type_list">
+          <option value="Consulting">
+          <option value="Support">
+          <option value="Development">
+        </datalist>
+      </div>
+      <div class="col-12 col-md-6 col-lg-4 mb-3">
+        <label for="target_audience" class="form-label" style="font-family: Arial, sans-serif; font-weight: bold; color: rgb(6, 0, 0);">Target Audience</label>
+        <input list="target_audience_list" name="target_audience" id="target_audience" class="form-control search-input" placeholder="Enter target audience (optional)">
+        <datalist id="target_audience_list">
+          <option value="Consumers">
+          <option value="Businesses">
+          <option value="Students">
+        </datalist>
+      </div>
+      <div class="col-12 col-md-6 col-lg-4 mb-3">
+        <label for="price_range" class="form-label" style="font-family: Arial, sans-serif; font-weight: bold; color: rgb(5, 0, 0);">Price Range</label>
+        <input list="price_range_list" name="price_range" id="price_range" class="form-control search-input" placeholder="Enter price range (optional)">
+        <datalist id="price_range_list">
+          <option value="$">
+          <option value="$$">
+          <option value="$$$">
+          <option value="$$$$">
+          <option value="€">
+          <option value="£">
+          <option value="₹">
+        </datalist>
+      </div>
+      <div class="col-12 col-md-6 col-lg-4 mb-3">
+        <label for="business_size" class="form-label" style="font-family: Arial, sans-serif; font-weight: bold; color: rgb(5, 0, 0);">Business Size</label>
+        <input list="business_size_list" name="business_size" id="business_size" class="form-control search-input" placeholder="Enter or select business size (optional)">
+        <datalist id="business_size_list">
+          <option value="Small">
+          <option value="Medium">
+          <option value="Large">
+        </datalist>
+      </div>
+      <div class="col-12 col-md-6 col-lg-4 mb-3">
+        <label for="rating" class="form-label" style="font-family: Arial, sans-serif; font-weight: bold; color: rgb(7, 0, 0);">Minimum Rating</label>
+        <input list="rating_list" name="rating" id="rating" class="form-control search-input" placeholder="Enter or select minimum rating (optional)">
+        <datalist id="rating_list">
+          <option value="1 star">
+          <option value="2 stars">
+          <option value="3 stars">
+          <option value="4 stars">
+          <option value="5 stars">
+        </datalist>
+      </div>
+    </div>
+    <div class="text-center mt-4">
+      <button class="btn btn-primary search-button" type="submit" style="background-color: rgb(4, 0, 0); border-color: black;">
+        <i class="fas fa-search me-2"></i>Find Buyers
+        <span id="loader" class="spinner-border spinner-border-sm ms-2" style="display: none;"></span>
+      </button>
+    </div>
+  </div>
+</form>
+
+</div>
+
+
+<!-- Results Section -->
+<div class="results-section mt-5">
+  <div class="card results-card" style="border: 2px solid black;">
+    <div class="card-body">
+      <h5 class="card-title text-center results-title">Search Results</h5>
+      <hr>
+      <div class="results-container" style="max-height: 400px; overflow-y: auto;">
+      <p><strong>Note:</strong> The following businesses are for demonstration purposes only and are not real. To find real businesses, use the form above</p>
+      <ul class="list-group list-group-flush results-list">
+          {% if not businesses %}
+          <!-- Placeholder Data -->
+          <li class="list-group-item results-item">
+            <strong class="business-name">Joe's Cafe</strong><br>
+            <span class="business-details">Location:</span> New York, NY<br>
+            <span class="business-details">Category:</span> Restaurant<br>
+            <span class="business-details">Description:</span> A cozy cafe offering organic coffee and pastries.<br>
+            <span class="business-details">Rating:</span> 4.5 stars<br>
+            <span class="business-details">Reviews:</span> 120 reviews<br>
+            <span class="business-details">Address:</span> 123 Coffee Lane, NY<br>
+            <span class="business-details">Phone:</span> (555) 123-4567<br>
+            <span class="business-details">Email:</span> <a href="mailto:info@joescafe.com">info@joescafe.com</a><br>
+            <span class="business-details">URL:</span> <a href="https://joescafe.com" target="_blank">joescafe.com</a><br>
+            <span class="business-details">Domain:</span> joescafe.com
+          </li>
+          <li class="list-group-item results-item">
+            <strong class="business-name">Tech Innovators Inc.</strong><br>
+            <span class="business-details">Location:</span> San Francisco, CA<br>
+            <span class="business-details">Category:</span> Technology<br>
+            <span class="business-details">Description:</span> Providing cutting-edge software solutions.<br>
+            <span class="business-details">Rating:</span> 4.8 stars<br>
+            <span class="business-details">Reviews:</span> 340 reviews<br>
+            <span class="business-details">Address:</span> 456 Tech Way, SF<br>
+            <span class="business-details">Phone:</span> (555) 987-6543<br>
+            <span class="business-details">Email:</span> <a href="mailto:support@techinnovators.com">support@techinnovators.com</a><br>
+            <span class="business-details">URL:</span> <a href="https://techinnovators.com" target="_blank">techinnovators.com</a><br>
+            <span class="business-details">Domain:</span> techinnovators.com
+          </li>
+          <li class="list-group-item results-item">
+            <strong class="business-name">Green Solutions LLC</strong><br>
+            <span class="business-details">Location:</span> Chicago, IL<br>
+            <span class="business-details">Category:</span> Consulting<br>
+            <span class="business-details">Description:</span> Offering sustainable solutions for businesses.<br>
+            <span class="business-details">Rating:</span> 4.7 stars<br>
+            <span class="business-details">Reviews:</span> 210 reviews<br>
+            <span class="business-details">Address:</span> 789 Green St, Chicago<br>
+            <span class="business-details">Phone:</span> (555) 246-8100<br>
+            <span class="business-details">Email:</span> <a href="mailto:contact@greensolutions.com">contact@greensolutions.com</a><br>
+            <span class="business-details">URL:</span> <a href="https://greensolutions.com" target="_blank">greensolutions.com</a><br>
+            <span class="business-details">Domain:</span> greensolutions.com
+          </li>
+          {% else %}
+          {% for business in businesses %}
+          <li class="list-group-item results-item">
+            <strong class="business-name">{{ business.name }}</strong><br>
+            <span class="business-details">Location:</span> {{ business.location }}<br>
+            <span class="business-details">Category:</span> {{ business.category }}<br>
+            <span class="business-details">Description:</span> {{ business.description }}<br>
+            <span class="business-details">Rating:</span> {{ business.rating }} stars<br>
+            <span class="business-details">Reviews:</span> {{ business.reviews }} reviews<br>
+            <span class="business-details">Address:</span> {{ business.address }}<br>
+            <span class="business-details">Phone:</span> {{ business.phone }}<br>
+            <span class="business-details">Email:</span> <a href="mailto:{{ business.email }}">{{ business.email }}</a><br>
+            <span class="business-details">URL:</span> <a href="{{ business.url }}" target="_blank">{{ business.url }}</a><br>
+            <span class="business-details">Domain:</span> {{ business.domain }}
+          </li>
+          {% endfor %}
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<style>
+  /* Form Styling */
+  .search-form {
+    margin: 0 auto;
+    padding: 1.5rem;
+    border: 2px solid rgb(8, 8, 8);
+    border-radius: 15px;
+    background: #fff;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
+
+   /* Scrollable results */
+  .results-container {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px;
+  }
+
+  results-list {
+  max-height: 400px;
+  overflow-y: auto;
+  border-radius: 10px;
+}
+
+  .form-label {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .search-input {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 0.95rem;
+    padding: 0.5rem;
+  }
+
+  .search-button {
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 0.7rem 1.5rem;
+    border-radius: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Results Styling */
+  .results-section {
+    margin-top: 2rem;
+  }
+
+  .results-card {
+    border: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  }
+
+  .results-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: rgb(4, 0, 0);
+  }
+
+  .results-list {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  .results-item {
+    padding: 1rem;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .results-item:last-child {
+    border-bottom: none;
+  }
+
+  .business-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: rgb(3, 3, 3);
+  }
+
+  .business-details {
+    font-size: 0.95rem;
+    color: #555;
+  }
+
+  .business-details a {
+    color: #007bff;
+    text-decoration: none;
+  }
+
+  .business-details a:hover {
+    text-decoration: underline;
+  }
+
+  /* Page Title Styling */
+  .page-title {
+    font-size: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .page-subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 2rem;
+  }
+</style>
+
+<script>
+    // Show loader animation on form submission
+    document.getElementById('find-businesses-form').addEventListener('submit', function () {
+        document.getElementById('loader').style.display = 'inline-block';
+    });
+
+    // Copy search results to clipboard
+    document.getElementById('copy-results')?.addEventListener('click', function () {
+        let resultsText = '';
+        document.querySelectorAll('.results-list li').forEach(result => {
+            resultsText += result.innerText + '\n\n';
+        
+        });
+        navigator.clipboard.writeText(resultsText).then(() => {
+            alert('Results copied to clipboard!');
+        }).catch(err => {
+            alert('Failed to copy results: ' + err);
+        });
+    });
+
+    // Download search results as a text file
+    document.getElementById('download-results')?.addEventListener('click', function () {
+        let resultsText = '';
+        document.querySelectorAll('.results-list li').forEach(result => {
+            resultsText += result.innerText + '\n\n';
+        });
+        const blob = new Blob([resultsText], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'businesses.txt';
+        link.click();
+    });
+
+    // Ensure responsive adjustments for inputs
+    window.addEventListener('resize', function () {
+        const formWidth = document.getElementById('find-businesses-form').offsetWidth;
+        const inputs = document.querySelectorAll('.search-input');
+        if (formWidth < 600) {
+            inputs.forEach(input => {
+                input.style.width = '100%';
+            });
+        } else {
+            inputs.forEach(input => {
+                input.style.width = '';
+            });
+        }
+    });
+</script>
+
+{% endblock %}

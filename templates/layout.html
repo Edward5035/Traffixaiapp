@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TraffiX AI{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #f4f4f9, #e0eafc);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Navbar */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #000407;
+            color: white;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+       /* Logo styling */
+.logo {
+    font-size: 25px; /* Larger logo font size */
+    font-weight: 700; /* Bold font */
+    color: #f39c12; /* Golden color */
+    letter-spacing: 2px; /* Slight letter spacing for modern touch */
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.logo i {
+    margin-right: 8px; /* Spacing between the icon and text */
+    font-size: 30px; /* Size of the icon */
+         color: transparent; /* Makes the icon text transparent to show the gradient */
+}
+
+
+
+/* Make the logo responsive */
+@media (max-width: 768px) {
+    .logo {
+        font-size: 20px; /* Slightly smaller logo on smaller screens */
+    }
+    .logo i {
+        font-size: 24px; /* Smaller icon size on smaller screens */
+    }
+}
+
+        .menu-icon {
+            display: none;
+            font-size: 24px;
+            color: #f39c12;
+            cursor: pointer;
+        }
+
+        /* Flex container for sidebar and main content */
+        .container-flex {
+            display: flex;
+            margin-top: 60px; /* To accommodate the fixed top-nav */
+            width: 100%;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 268px;
+            background: rgba(0, 2, 3, 0.85);
+            height: calc(100vh - 60px);
+            padding-top: 20px;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            z-index: 9998;
+            box-shadow: 4px 0 8px rgba(6, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 12px 20px;
+            font-weight: 900;
+            font-size: 18px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar a.active, .sidebar a:hover {
+            background-color: #f39c12;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .sidebar .btn {
+            background-color: #e74c3c;
+            color: white;
+            padding: 12px 20px;
+            text-align: center;
+            margin-top: 20px;
+            border-radius: 4px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar .btn:hover {
+            background-color: #c0392b;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 80px 20px;
+            margin-left: 250px;
+            color: #2c3e50;
+            width: 100%;
+        }
+
+        /* Icon Styling */
+        .sidebar i {
+            margin-right: 15px;
+            font-size: 20px;
+            color: #f39c12;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .top-nav {
+                padding: 10px;
+            }
+
+            .sidebar {
+                display: none; /* Hide sidebar on small screens */
+            }
+
+            .menu-icon {
+                display: block; /* Show mobile menu icon */
+            }
+
+            .sidebar.open {
+                display: block;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 70%;
+                height: 100%;
+                background-color: rgba(0, 2, 3, 0.95);
+                padding-top: 60px;
+                box-shadow: 4px 0 8px rgba(0, 0, 0, 0.2);
+                backdrop-filter: blur(10px);
+                overflow-y: auto;
+            }
+
+            /* Hide scrollbar for mobile menu */
+            .sidebar.open {
+                overflow-y: hidden;
+            }
+
+            .sidebar.open {
+                overflow-y: auto;
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+
+            .sidebar.open::-webkit-scrollbar {
+                display: none;
+            }
+
+            .sidebar a {
+                text-align: center;
+                padding: 15px 20px;
+                font-size: 20px;
+                width: 100%;
+                border-bottom: 1px solid #ccc;
+            }
+
+            .sidebar .btn {
+                width: 90%;
+                margin: 20px auto;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding-top: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navbar -->
+<div class="top-nav">
+    <div class="logo">
+        <i class="fas fa-rocket" style="color: #ff8000; margin-right: 8px;"></i>Traffix AI
+    </div>
+    <div class="menu-icon" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </div>
+</div>
+<div class="sidebar" id="sidebar">
+    <a href="{{ url_for('dashboard') }}" class="sidebar-item"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="{{ url_for('leads_generator') }}" class="sidebar-item"><i class="fas fa-user-plus"></i> Buyer Traffic</a>
+    <a href="{{ url_for('ai_lead_scoring') }}" class="sidebar-item"><i class="fas fa-user-plus"></i> Buyer Scoring</a>
+    <a href="{{ url_for('competitor_analysis') }}" class="sidebar-item"><i class="fas fa-binoculars"></i> Competitors</a>
+     <a href="{{ url_for('seo_boost') }}" class="sidebar-item"><i class="fas fa-chart-line"></i> SEO Booster</a>
+    <a href="{{ url_for('bulk_email_sender') }}" class="sidebar-item"><i class="fas fa-envelope"></i>Mass Outreach</a>
+    <a href="{{ url_for('email_validation') }}" class="sidebar-item"><i class="fas fa-check-circle"></i> Email Check</a>
+    <a href="{{ url_for('phone_validation') }}" class="sidebar-item"><i class="fas fa-phone-alt"></i> Phone Check</a>
+    <a href="{{ url_for('help_center') }}" class="sidebar-item"><i class="fas fa-question-circle"></i> Help Center</a>
+    <a href="{{ url_for('logout') }}" class="btn btn-danger mt-3"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+</div>
+
+
+    <!-- Flex container -->
+    <div class="container-flex">
+        <!-- Sidebar -->
+      
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            {% block content %}
+            <!-- Content from other templates will appear here -->
+            {% endblock %}
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+            }
+        }
+
+        // Close sidebar when clicking outside of it
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuIcon = document.querySelector('.menu-icon');
+            if (!sidebar.contains(event.target) && !menuIcon.contains(event.target)) {
+                closeSidebar();
+            }
+        });
+
+        function setActiveLink(link) {
+            const links = document.querySelectorAll('.sidebar-item');
+            links.forEach(function(item) {
+                item.classList.remove('active');
+            });
+            link.classList.add('active');
+        }
+    </script>
+</body>
+</html>

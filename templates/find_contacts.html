@@ -1,0 +1,200 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="text-center my-4 page-title">Social Contacts</h1>
+    <p class="text-center page-subtitle">Effortlessly connect and network by finding individuals in a company.</p>
+    
+    <!-- Search Form -->
+    <form id="find-contacts-form" class="search-form" method="POST" action="{{ url_for('find_contacts') }}">
+        <div class="input-group mb-3 search-input-group">
+            <input type="text" name="company_name" class="form-control search-input" placeholder="Enter company name" required>
+            <button class="btn btn-primary search-button" type="submit">
+                <i class="fas fa-search me-2"></i>Find Contacts
+                <span id="loader" class="spinner-border spinner-border-sm ms-2" style="display: none;"></span>
+            </button>
+        </div>
+    </form>
+
+    <!-- Results Section -->
+    <div class="results-section">
+        <div class="card results-card">
+            <div class="card-body">
+                <h5 class="card-title text-center results-title">Search Results</h5>
+                <hr>
+                {% if not contacts %}
+                <p class="text-center results-message">
+                    Start your search by entering a company name and clicking "Find Contacts."
+                </p>
+                {% else %}
+                <ul class="list-group list-group-flush results-list">
+                    {% for contact in contacts %}
+                    <li class="list-group-item results-item">
+                        <strong class="contact-name">{{ contact['name'] }}</strong><br>
+                        <span class="contact-details">Email:</span> {{ contact['email'] or 'None' }}<br>
+                        <span class="contact-details">Phone No:</span> {{ contact['phone'] or 'None' }}<br>
+                        <span class="contact-details">Position:</span> {{ contact['position'] or 'None' }}<br>
+                        <span class="contact-details">LinkedIn:</span> <a href="{{ contact['linkedin'] }}" target="_blank">{{ contact['linkedin'] or 'None' }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+
+                <!-- Copy and Download Buttons -->
+                <div class="button-group text-center mt-4">
+                    <button id="copy-results" class="btn btn-outline-primary btn-action"><i class="fas fa-copy"></i> Copy</button>
+                    <button id="download-results" class="btn btn-outline-primary btn-action"><i class="fas fa-download"></i> Download</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Page Styles */
+    .page-title {
+        color: #4a4a4a;
+        font-weight: 800;
+        font-size: 2.5rem;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .page-subtitle {
+        color: #777;
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Search Form Styles */
+    .search-form {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .search-input-group {
+        display: flex;
+        align-items: center;
+        border: 2px solid #f39c12;
+        border-radius: 30px;
+        padding: 0.5rem;
+        background: #fff;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .search-input {
+        border: none;
+        padding: 0.75rem;
+        flex: 1;
+        font-size: 1rem;
+    }
+
+    .search-button {
+        background-color: #f39c12;
+        color: #fff;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 30px;
+        transition: background-color 0.3s ease;
+    }
+
+    .search-button:hover {
+        background-color: #e67e22;
+    }
+
+    /* Results Section Styles */
+    .results-section {
+        max-width: 1000px;
+        margin: 30px auto;
+    }
+
+    .results-card {
+        border-radius: 20px;
+        border: 2px solid #f39c12;
+        padding: 1.5rem;
+        background: #fff;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .results-title {
+        color: #4a4a4a;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .results-message {
+        color: #777;
+        font-size: 1.1rem;
+    }
+
+    .results-list {
+        max-height: 300px;
+        overflow-y: auto;
+        padding: 10px;
+    }
+
+    .results-item {
+        font-size: 1rem;
+        padding: 15px;
+        border-bottom: 1px solid #ddd;
+        transition: transform 0.2s ease;
+    }
+
+    .results-item:hover {
+        transform: scale(1.02);
+        background-color: #fef9e7;
+    }
+
+    .contact-name {
+        font-size: 1.2rem;
+        color: #f39c12;
+    }
+
+    .contact-details {
+        color: #555;
+    }
+
+    /* Button Group Styles */
+    .button-group .btn-action {
+        font-size: 1rem;
+        border-radius: 25px;
+        padding: 0.5rem 1.5rem;
+        margin: 5px;
+        color: #f39c12;
+        border-color: #f39c12;
+    }
+
+    .btn-action:hover {
+        color: #fff;
+        background-color: #f39c12;
+        border-color: #e67e22;
+    }
+</style>
+
+<script>
+    document.getElementById('find-contacts-form').addEventListener('submit', function() {
+        document.getElementById('loader').style.display = 'inline-block';
+    });
+
+    document.getElementById('copy-results').addEventListener('click', function() {
+        let resultsText = '';
+        document.querySelectorAll('#results-list li').forEach(result => {
+            resultsText += result.innerText + '\n\n';
+        });
+        navigator.clipboard.writeText(resultsText).then(() => alert('Results copied to clipboard!'));
+    });
+
+    document.getElementById('download-results').addEventListener('click', function() {
+        let resultsText = '';
+        document.querySelectorAll('#results-list li').forEach(result => {
+            resultsText += result.innerText + '\n\n';
+        });
+        const blob = new Blob([resultsText], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'contacts.txt';
+        link.click();
+    });
+</script>
+{% endblock %}

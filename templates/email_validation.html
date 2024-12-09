@@ -1,0 +1,124 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="my-4 text-center" style="font-weight: 700; color: #1e3a8a;">Email Validation</h1>
+    <p class="text-center" style="font-size: 1.1rem; color: #4b5563;">Ensure accurate email delivery with our premium validation tool.</p>
+
+    <!-- Email Validation Form -->
+    <form id="email-validation-form" class="d-flex flex-column align-items-center mb-5" method="POST" action="{{ url_for('email_validation') }}" style="max-width: 800px; margin: auto; border: 2px solid #f39c12; border-radius: 15px; background-color: #ffffff; padding: 25px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);">
+        <div class="mb-3 w-100">
+            <label for="email-addresses" class="form-label" style="font-weight: 600; color: #1e3a8a;">Enter Email Addresses</label>
+            <textarea id="email-addresses" name="email_addresses" class="form-control rounded-lg shadow-sm" rows="8" placeholder="Type one email per line for validation" style="border: 2px solid #f39c12;" required></textarea>
+        </div>
+
+        <button class="btn btn-orange rounded-lg mt-3 shadow-lg" type="submit" style="background-color: #f39c12; color: #ffffff; width: 100%; max-width: 200px;">
+            <i class="fas fa-check"></i> Validate
+        </button>
+    </form>
+
+    <!-- Results Section -->
+    <div id="validation-results" class="card shadow-lg mx-auto" style="max-width: 800px; border-radius: 15px; border: 2px solid #f39c12; background-color: #ffffff;">
+        <div class="card-body">
+            <h5 class="card-title text-center" style="color: #f39c12;">Validation Results</h5>
+            <hr>
+            <ul class="list-group list-group-flush" id="results-list" style="max-height: 300px; overflow-y: auto;">
+                <!-- Results will be populated here dynamically -->
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+    #email-validation-form {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    #email-validation-form:hover {
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* Elevated shadow */
+        transform: translateY(-5px); /* Floating effect */
+    }
+
+    #validation-results {
+        margin-top: 20px;
+    }
+
+    .form-control {
+        border-radius: 10px;
+    }
+
+    .btn-orange {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .btn-orange:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .card {
+        transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+
+    .card:hover {
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        transform: translateY(-5px);
+    }
+
+    .list-group-item {
+        border-left: 5px solid #f39c12;
+        background-color: #ffffff;
+        padding: 15px;
+    }
+
+    .list-group-item:hover {
+        background-color: #fef9f3;
+    }
+
+    .list-group-item .status {
+        font-weight: bold;
+        color: #10b981;
+    }
+
+    .list-group-item .status.invalid {
+        color: #ef4444;
+    }
+
+    .list-group-item .status.pending {
+        color: #f59e0b;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const emailValidationForm = document.getElementById('email-validation-form');
+        const resultsList = document.getElementById('results-list');
+
+        emailValidationForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            resultsList.innerHTML = '';
+
+            const formData = new FormData(this);
+
+            fetch(this.action, {
+                method: this.method,
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(result => {
+                    const li = document.createElement('li');
+                    li.className = `list-group-item`;
+                    li.innerHTML = `<strong style="color: #f39c12;">${result.email}</strong> - <span class="status ${result.status_class}">${result.status}</span>`;
+                    resultsList.appendChild(li);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+</script>
+
+{% endblock %}

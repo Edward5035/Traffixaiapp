@@ -1,0 +1,213 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="my-4 text-center" style="color: #6a1b9a;">Target Business Leads</h1>
+
+    <!-- Search Form -->
+    <form id="search-form" class="d-flex flex-column align-items-center mb-5" method="POST" action="{{ url_for('target_business') }}">
+        <div class="input-group" style="max-width: 600px; width: 100%;">
+            <input type="text" name="business_type" class="form-control rounded-pill shadow-sm" 
+                   placeholder="e.g., Plumbers in Brooklyn, NY" 
+                   aria-label="Search" 
+                   aria-describedby="search-button" 
+                   style="border: 2px solid #6a1b9a;" required>
+        </div>
+        <button class="btn btn-purple rounded-pill mt-3 shadow-lg d-flex align-items-center justify-content-center" 
+                type="submit" 
+                id="search-button">
+            <i class="fas fa-search"></i> 
+            <span class="ms-2">Search</span>
+            <div id="loader" class="spinner-border text-light ms-2" role="status" style="display: none; width: 20px; height: 20px;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </button>
+    </form>
+
+    <!-- Leads Display Card -->
+    <div class="card shadow-lg mx-auto" style="max-width: 800px; border-radius: 15px; border: 2px solid #8e24aa;">
+        <div class="card-body">
+            <h5 class="card-title text-center" style="color: #8e24aa;">Generated Leads</h5>
+            <hr>
+            {% if not leads %}
+            <p class="text-center" style="color: #777777;">
+                Enter a search query and click the "Search" button to generate leads. Here's an example of what you might see:
+            </p>
+            <ul class="list-group list-group-flush" id="leads-list">
+                <li class="list-group-item">
+                    <strong style="color: #6a1b9a;">Example</strong><br><br>
+                    <strong style="font-size: 1.2rem; color: #6a1b9a;">Joe's Plumbing</strong><br>
+                    <strong style="color: #777777;">Email:</strong> contact@joesplumbing.com<br>
+                    <strong style="color: #777777;">Phone No:</strong> (555) 123-4567<br>
+                    <strong style="color: #777777;">Address:</strong> 123 Main St, Los Angeles, CA<br>
+                    <strong style="color: #777777;">Social Media:</strong> facebook.com/joesplumbing
+                </li>
+            </ul>
+            {% else %}
+            <ul class="list-group list-group-flush" id="leads-list">
+                {% for lead in leads %}
+                <li class="list-group-item" {% if loop.index > 10 %}style="display: none;"{% endif %}>
+                    <strong style="font-size: 1.2rem; color: #6a1b9a;">{{ lead['info']['company_name'] or "N/A" }}</strong><br>
+                    <strong style="color: #777777;">Email:</strong> {{ lead['info']['emails'] | join(', ') or 'None' }}<br>
+                    <strong style="color: #777777;">Phone No:</strong> {{ lead['info']['phone_numbers'] | join(', ') or 'None' }}<br>
+                    <strong style="color: #777777;">Address:</strong> {{ lead['info']['addresses'] | join(', ') or 'None' }}<br>
+                    <strong style="color: #777777;">Social Media:</strong> {{ lead['info']['social_media'] | join(', ') or 'None' }}<br>
+                    <a href="{{ lead['link'] }}" target="_blank">Visit Website</a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+
+  <!-- Buttons -->
+
+
+
+<style>
+    /* General Styling */
+    .card, .btn {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover, .btn:hover {
+        transform: translateY(-5px); /* Floating effect */
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); /* Deepened shadow */
+    }
+
+    /* Leads list styling */
+    #leads-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    /* Responsive Search Button */
+    #search-button {
+        width: 100%;
+        max-width: 200px;
+    }
+
+
+     .btn-responsive {
+        width: auto; /* Default for larger screens */
+    }
+
+    @media (max-width: 576px) { /* Small screens like mobile */
+        .d-flex {
+            flex-direction: column; /* Stack buttons vertically */
+            align-items: center; /* Center them horizontally */
+        }
+
+        .btn-responsive {
+            width: 90%; /* Full width with some margin */
+            margin-bottom: 10px; /* Add spacing between buttons */
+        }
+    }
+
+    /* Responsive Layout */
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 1.8rem;
+        }
+
+        #search-button {
+            font-size: 1rem;
+        }
+
+        .card {
+            padding: 1rem;
+        }
+    }
+
+    /* Responsive Buttons */
+    .btn {
+        padding: 10px 20px;
+        font-size: 1rem;
+        min-width: 150px;
+    }
+
+    @media (max-width: 576px) {
+        .btn {
+            width: 90%;
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+            padding: 8px 16px;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchForm = document.getElementById('search-form');
+        const searchButton = document.getElementById('search-button');
+        const loader = document.getElementById('loader');
+
+        searchForm.addEventListener('submit', () => {
+            loader.style.display = 'inline-block'; // Show loader when search starts
+        });
+
+        const copyPhonesButton = document.getElementById('copy-phones');
+        const copyEmailsButton = document.getElementById('copy-emails');
+        const downloadLeadsButton = document.getElementById('download-leads');
+
+        copyPhonesButton.addEventListener('click', () => {
+            const phoneNumbers = [];
+            document.querySelectorAll('#leads-list .list-group-item').forEach(item => {
+                const phoneText = item.innerHTML.match(/Phone No:<\/strong>\s*([^<]+)/);
+                if (phoneText && phoneText[1] !== 'None') {
+                    phoneNumbers.push(phoneText[1].trim());
+                }
+            });
+            copyToClipboard(phoneNumbers.join('\n'));
+        });
+
+        copyEmailsButton.addEventListener('click', () => {
+            const emails = [];
+            document.querySelectorAll('#leads-list .list-group-item').forEach(item => {
+                const emailText = item.innerHTML.match(/Email:<\/strong>\s*([^<]+)/);
+                if (emailText && emailText[1] !== 'None') {
+                    emails.push(emailText[1].trim());
+                }
+            });
+            copyToClipboard(emails.join('\n'));
+        });
+
+        downloadLeadsButton.addEventListener('click', () => {
+            const leads = [];
+            document.querySelectorAll('#leads-list .list-group-item').forEach(item => {
+                const companyName = item.querySelector('strong:first-child').textContent.trim();
+                const emailText = item.innerHTML.match(/Email:<\/strong>\s*([^<]+)/);
+                const phoneText = item.innerHTML.match(/Phone No:<\/strong>\s*([^<]+)/);
+                const addressText = item.innerHTML.match(/Address:<\/strong>\s*([^<]+)/);
+                const socialMediaText = item.innerHTML.match(/Social Media:<\/strong>\s*([^<]+)/);
+
+                leads.push({
+                    company: companyName,
+                    email: emailText ? emailText[1].trim() : '',
+                    phone: phoneText ? phoneText[1].trim() : '',
+                    address: addressText ? addressText[1].trim() : '',
+                    socialMedia: socialMediaText ? socialMediaText[1].trim() : ''
+                });
+            });
+
+            const csvContent = "data:text/csv;charset=utf-8," +
+                "Company Name,Email,Phone Number,Address,Social Media\n" +
+                leads.map(lead => `"${lead.company}","${lead.email}","${lead.phone}","${lead.address}","${lead.socialMedia}"`).join("\n");
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', 'leads.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard!');
+            });
+        }
+    });
+</script>
+{% endblock %}

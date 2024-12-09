@@ -1,0 +1,111 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="my-4 text-center" style="color: #f39c12;">Phone Number Validation</h1>
+    <p class="text-center" style="color: #555;">Ensure your phone numbers are active and reachable for professional outreach.</p>
+
+    <!-- Phone Number Validation Form -->
+    <form id="phone-validation-form" class="d-flex flex-column align-items-center mb-5" method="POST" action="{{ url_for('phone_validation') }}" style="max-width: 800px; margin: auto; background-color: #fff; padding: 25px; border-radius: 15px; border: 2px solid #f39c12; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);">
+        <div class="mb-3 w-100">
+            <label for="phone-numbers" class="form-label" style="color: #f39c12; font-weight: bold;">Phone Numbers</label>
+            <textarea id="phone-numbers" name="phone_numbers" class="form-control rounded-lg shadow-sm" rows="8" placeholder="Enter phone numbers, one per line (e.g., +1 415-555-2671)" style="border: 2px solid #f39c12;" required></textarea>
+        </div>
+
+        <button id="validate-button" class="btn btn-primary rounded-lg mt-3 shadow-lg" type="submit" style="background-color: #f39c12; color: #fff; width: 100%; max-width: 200px;">
+            <i class="fas fa-check"></i> Validate Numbers
+        </button>
+    </form>
+
+    <!-- Results Section -->
+    <div id="validation-results" class="card mx-auto shadow" style="max-width: 800px; border-radius: 15px; border: 2px solid #f39c12; background-color: #fff; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);">
+        <div class="card-body">
+            <h5 class="card-title text-center" style="color: #f39c12;">Validation Results</h5>
+            <hr>
+            <ul class="list-group list-group-flush" id="results-list" style="max-height: 300px; overflow-y: auto;">
+                <!-- Results will be populated here dynamically -->
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+    #phone-validation-form:hover {
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        transform: translateY(-5px); /* Floating effect */
+    }
+
+    .btn-primary {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .card {
+        transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+
+    .card:hover {
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        transform: translateY(-5px);
+    }
+
+    .list-group-item {
+        border-left: 4px solid #f39c12;
+        border-radius: 8px;
+        margin-bottom: 5px;
+        background-color: #f9f9f9;
+    }
+
+    .list-group-item .valid {
+        color: green;
+    }
+
+    .list-group-item .invalid {
+        color: red;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const phoneValidationForm = document.getElementById('phone-validation-form');
+        const validateButton = document.getElementById('validate-button');
+        const resultsList = document.getElementById('results-list');
+
+        phoneValidationForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            validateButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Validating...';
+            validateButton.disabled = true;
+
+            const formData = new FormData(phoneValidationForm);
+            fetch('{{ url_for("phone_validation") }}', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                validateButton.innerHTML = '<i class="fas fa-check"></i> Validate Numbers';
+                validateButton.disabled = false;
+
+                resultsList.innerHTML = '';
+                data.forEach(result => {
+                    const resultItem = document.createElement('li');
+                    resultItem.className = 'list-group-item';
+                    resultItem.innerHTML = `<strong style="color: #f39c12;">${result.number}</strong> - <span class="${result.status_class}">${result.status}</span>`;
+                    resultsList.appendChild(resultItem);
+                });
+            })
+            .catch(error => {
+                validateButton.innerHTML = '<i class="fas fa-check"></i> Validate Numbers';
+                validateButton.disabled = false;
+
+                resultsList.innerHTML = `<li class="list-group-item text-danger">An error occurred: ${error}</li>`;
+            });
+        });
+    });
+</script>
+{% endblock %}

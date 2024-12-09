@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campaign Management</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Manage Your Campaigns</h1>
+        <form id="campaign-form">
+            <div class="form-group">
+                <label for="name">Campaign Name</label>
+                <input type="text" class="form-control" id="name" required>
+            </div>
+            <div class="form-group">
+                <label for="message">Campaign Message</label>
+                <textarea class="form-control" id="message" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="scheduled_time">Scheduled Time</label>
+                <input type="datetime-local" class="form-control" id="scheduled_time" required>
+            </div>
+            <div class="form-group">
+                <label for="platform">Platform</label>
+                <input type="text" class="form-control" id="platform" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Campaign</button>
+        </form>
+        <div class="mt-4" id="campaign-output"></div>
+        <h2 class="mt-5">Existing Campaigns</h2>
+        <div id="campaigns-list"></div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#campaign-form').on('submit', function(event) {
+                event.preventDefault();
+                const name = $('#name').val();
+                const message = $('#message').val();
+                const scheduled_time = $('#scheduled_time').val();
+                const platform = $('#platform').val();
+                $.post('/create-campaign', { name, message, scheduled_time, platform }, function(data) {
+                    $('#campaign-output').html('<h3>' + data.message + '</h3>');
+                    loadCampaigns();
+                });
+            });
+
+            function loadCampaigns() {
+                $.get('/get-campaigns', function(data) {
+                    let campaigns_html = '<ul>';
+                    data.campaigns.forEach(function(campaign) {
+                        campaigns_html += '<li><strong>' + campaign.name + '</strong>: ' + campaign.message + ' (Scheduled for: ' + campaign.scheduled_time + ' on ' + campaign.platform + ')</li>';
+                    });
+                    campaigns_html += '</ul>';
+                    $('#campaigns-list').html(campaigns_html);
+                });
+            }
+
+            loadCampaigns();
+        });
+    </script>
+</body>
+</html>

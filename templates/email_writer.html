@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Email Writer</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Generate AI-Driven Emails</h1>
+        <form id="email-form">
+            <div class="form-group">
+                <label for="subject">Email Subject</label>
+                <input type="text" class="form-control" id="subject" required>
+            </div>
+            <div class="form-group">
+                <label for="outline">Email Outline</label>
+                <textarea class="form-control" id="outline" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Generate Email</button>
+        </form>
+        <div class="mt-4" id="email-output"></div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#email-form').on('submit', function(event) {
+                event.preventDefault();
+                const subject = $('#subject').val();
+                const outline = $('#outline').val();
+                $.post('/generate-email', { subject, outline }, function(data) {
+                    $('#email-output').html('<h3>Generated Email:</h3><p>' + data.email + '</p>');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

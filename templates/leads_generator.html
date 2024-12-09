@@ -1,0 +1,320 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container-fluid d-flex flex-column align-items-center">
+    <!-- Main Title -->
+    <h1 class="text-center mb-5" style="font-family: 'Montserrat', sans-serif; font-size: 3.5rem; color: #2c3e50; font-weight: 700;">Unlock Premium Buyers</h1>
+
+    <!-- Form Card -->
+    <div class="card shadow-lg mb-5 p-5" style="max-width: 900px; width: 100%; border-radius: 15px; border: 2px solid #f39c12;">
+        <div class="card-body">
+            <h2 class="text-center mb-4" style="font-size: 2rem; font-weight: 600; color: #2c3e50;">Find the Right Customers for Your Business</h2>
+
+            <form id="discover-form" method="POST" action="{{ url_for('search') }}">
+                <div class="row g-4">
+                    <!-- Specialty Field -->
+                    <div class="col-md-6">
+                        <label for="specialty" class="form-label fw-bold text-primary">Industry</label>
+                        <input 
+                            type="text" 
+                            name="specialty" 
+                            class="form-control form-control-lg" 
+                            id="specialty" 
+                            placeholder="e.g., Home Renovations" 
+                            required>
+                    </div>
+
+                    <!-- Location Field -->
+                    <div class="col-md-6">
+                        <label for="location" class="form-label fw-bold text-primary">Region</label>
+                        <input 
+                            type="text" 
+                            name="location" 
+                            class="form-control form-control-lg" 
+                            id="location" 
+                            placeholder="e.g., San Francisco, CA" 
+                            required>
+                    </div>
+
+                    <!-- Business Type Field -->
+                    <div class="col-md-6">
+                        <label for="business_type" class="form-label fw-bold text-primary">Business Category</label>
+                        <input 
+                            type="text" 
+                            id="business_type" 
+                            class="form-control form-control-lg" 
+                            placeholder="e.g., B2B, Retail">
+                    </div>
+
+                    <!-- Buyer Type Field -->
+                    <div class="col-md-6">
+                        <label for="buyer_type" class="form-label fw-bold text-primary">Customer Type</label>
+                        <input 
+                            type="text" 
+                            id="buyer_type" 
+                            class="form-control form-control-lg" 
+                            placeholder="e.g., Corporate, Individuals">
+                    </div>
+
+                    <!-- Target Budget Field -->
+                    <div class="col-md-6">
+                        <label for="target_budget" class="form-label fw-bold text-primary">Budget Range</label>
+                        <input 
+                            type="text" 
+                            id="target_budget" 
+                            class="form-control form-control-lg" 
+                            placeholder="e.g., $5,000 to $20,000">
+                    </div>
+                </div>
+
+                <!-- Submit Button with Loader -->
+                <div class="d-flex justify-content-center mt-4">
+                    <button 
+                        class="btn btn-primary rounded-pill d-flex align-items-center justify-content-center px-5 py-3" 
+                        type="submit" 
+                        id="discover-button">
+                        <i class="fas fa-search"></i> 
+                        <span class="ms-2">Get Leads Now</span>
+                        <div 
+                            id="loader" 
+                            class="spinner-border text-light ms-2" 
+                            role="status" 
+                            style="display: none; width: 25px; height: 25px;">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+  <!-- Results Card -->
+<div class="card shadow-lg p-5 mb-5" style="max-width: 900px; width: 100%; border-radius: 15px; border: 2px solid #f39c12;">
+    <div class="card-body">
+        <h5 class="card-title text-center" style="font-size: 1.8rem; font-weight: 600; color: #2c3e50;">Your Premium Buyer List</h5>
+        <hr class="bg-primary">
+
+        {% if not session.get('leads') %}
+            <!-- Placeholder content when no leads are available -->
+            <p class="text-center text-muted">Fill out the form above to discover your ideal buyers.</p>
+            <div class="scrollable-results" style="max-height: 400px; overflow-y: auto;">
+                <div class="row g-4">
+                    <!-- Placeholder Card 1 -->
+                    <div class="col-md-6">
+                        <div class="card lead-card shadow-sm p-4" style="border-radius: 15px; border: 1px solid #f39c12;">
+                            <div class="card-body">
+                                <h6 class="card-title text-primary fw-bold mb-2">
+                                    <i class="fas fa-building me-2"></i>Placeholder Co.
+                                </h6>
+                                <p class="mb-1">
+                                    <i class="fas fa-envelope me-2"></i>Email: info@placeholder.com
+                                </p>
+                                <p class="mb-1">
+                                    <i class="fas fa-phone-alt me-2"></i>Phone: (123) 456-7890
+                                </p>
+                                <p class="mb-1">
+                                    <i class="fas fa-map-marker-alt me-2"></i>Address: 123 Placeholder Street
+                                </p>
+                                <p class="mb-1">
+                                    <i class="fas fa-share me-2"></i>Social Media: @placeholder
+                                </p>
+                                <a href="#" class="btn btn-primary btn-sm mt-3 w-100">
+                                    <i class="fas fa-globe me-2"></i>Visit Website
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Placeholder Card 2 -->
+                    <div class="col-md-6">
+                        <div class="card lead-card shadow-sm p-4" style="border-radius: 15px; border: 1px solid #f39c12;">
+                            <div class="card-body">
+                                <h6 class="card-title text-primary fw-bold mb-2">
+                                    <i class="fas fa-building me-2"></i>Example Inc.
+                                </h6>
+                                <p class="mb-1">
+                                    <i class="fas fa-envelope me-2"></i>Email: contact@example.com
+                                </p>
+                                <p class="mb-1">
+                                    <i class="fas fa-phone-alt me-2"></i>Phone: (987) 654-3210
+                                </p>
+                                <p class="mb-1">
+                                    <i class="fas fa-map-marker-alt me-2"></i>Address: 456 Example Avenue
+                                </p>
+                                <p class="mb-1">
+                                    <i class="fas fa-share me-2"></i>Social Media: @example
+                                </p>
+                                <a href="#" class="btn btn-primary btn-sm mt-3 w-100">
+                                    <i class="fas fa-globe me-2"></i>Visit Website
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <!-- Real results are displayed here when leads are available -->
+            <div class="scrollable-results" style="max-height: 400px; overflow-y: auto;">
+                <div class="row g-4">
+                    {% for lead in session['leads'] %}
+                    <div class="col-md-6">
+                        <div class="card lead-card shadow-sm p-4" style="border-radius: 15px; border: 1px solid #f39c12;">
+                            <div class="card-body">
+                                <h6 class="card-title text-primary fw-bold mb-2">
+                                    <i class="fas fa-building me-2"></i>{{ lead['info']['company_name'] or "N/A" }}
+                                </h6>
+                                <p class="mb-1">
+                                    <i class="fas fa-envelope me-2"></i>Email: {{ lead['info']['emails'] | join(', ') or 'None' }}
+                                </p>
+                                <p class="mb-1">
+                                    <i class="fas fa-phone-alt me-2"></i>Phone: {{ lead['info']['phone_numbers'] | join(', ') or 'None' }}
+                                </p>
+                                <p class="mb-1">
+                                    <i class="fas fa-map-marker-alt me-2"></i>Address: {{ lead['info']['addresses'] | join(', ') or 'None' }}
+                                </p>
+                                <p class="mb-1">
+                                    <i class="fas fa-share me-2"></i>Social Media: {{ lead['info']['social_media'] | join(', ') or 'None' }}
+                                </p>
+                                <a href="{{ lead['link'] }}" target="_blank" class="btn btn-primary btn-sm mt-3 w-100">
+                                    <i class="fas fa-globe me-2"></i>Visit Website
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+
+
+    <!-- Action Buttons -->
+    <div class="d-flex justify-content-center mt-4">
+        <button id="copy-phones" class="btn btn-primary mx-3 rounded-pill px-4 py-2">Copy Phone Numbers</button>
+        <button id="copy-emails" class="btn btn-primary mx-3 rounded-pill px-4 py-2">Copy Email Addresses</button>
+        <button id="download-leads" class="btn btn-primary mx-3 rounded-pill px-4 py-2">Download Leads</button>
+    </div>
+</div>
+
+<style>
+:root {
+    --primary-color: #f39c12;
+    --highlight-color: #f39c12;
+    --secondary-color: #2c3e50;
+    --background-color: #f8f9fa;
+}
+
+/* Base Styles for Buttons */
+button {
+  width: 100%;
+  max-width: 200px;
+  margin: 5px 0;
+}
+
+/* Flexbox container */
+.d-flex {
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Larger screens (desktops and large tablets) */
+@media (min-width: 768px) {
+  .d-flex {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  button {
+    max-width: none;
+    margin: 0 10px;
+  }
+}
+
+/* Extra large screens (desktops) */
+@media (min-width: 1200px) {
+  button {
+    max-width: 250px;
+  }
+}
+
+
+body {
+    background-color: var(--background-color);
+    font-family: 'Montserrat', sans-serif;
+    color: var(--secondary-color);
+}
+
+.card {
+    border: 2px solid var(--highlight-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.form-label {
+    color: var(--secondary-color);
+}
+
+.form-control {
+    border: 1px solid var(--highlight-color);
+    border-radius: 10px;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: none;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: #e67e22;
+}
+
+
+
+
+@media (max-width: 768px) {
+    .col-md-6 {
+        width: 100% !important;
+    }
+
+    .btn-primary, .btn-outline-primary {
+        width: 100%;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const loader = document.getElementById('loader');
+    const discoverForm = document.getElementById('discover-form');
+
+    discoverForm.addEventListener('submit', (event) => {
+        event.preventDefault(); 
+        
+        const specialty = document.querySelector('input[name="specialty"]').value;
+        const location = document.querySelector('input[name="location"]').value;
+
+        const combinedQuery = `${specialty} in ${location}`;
+        const combinedInput = document.createElement('input');
+        combinedInput.type = 'hidden';
+        combinedInput.name = 'business_type';
+        combinedInput.value = combinedQuery;
+
+        discoverForm.appendChild(combinedInput);
+        loader.style.display = 'inline-block';
+        discoverForm.submit();
+    });
+});
+</script>
+
+{% endblock %}
