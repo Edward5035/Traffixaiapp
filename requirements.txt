@@ -1,5 +1,3 @@
-pip>=22.0
-setuptools>=64.0
 aiohappyeyeballs
 aiohttp
 aiosignal
@@ -36,7 +34,6 @@ lxml_html_clean
 MarkupSafe
 multidict
 outcome
-p
 packaging
 parse
 phonenumbers
